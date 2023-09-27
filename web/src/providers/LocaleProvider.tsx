@@ -1,19 +1,95 @@
-import { Context, createContext, useContext, useState } from 'react';
+import { Context, createContext, useContext, useEffect, useState } from 'react';
 import { useNuiEvent } from '../hooks/useNuiEvent';
 import { debugData } from '../utils/debugData';
+import { fetchNui } from '../utils/fetchNui';
 
-debugData([
-  {
-    action: 'loadLocales',
-    data: ['en', 'fr', 'de', 'it', 'es', 'pt-BR', 'pl', 'ru', 'ko', 'zh-TW', 'ja', 'es-MX', 'zh-CN'],
-  },
-]);
+interface Locale {
+  ui: {
+    door_actions: string,
+    settings: string,
+    copy_settings: string,
+    settings_copied: string,
+    teleport_to_door: string,
+    confirm_delete: string,
+    confirm_delete_prompt: string,
+    confirm: string,
+    cancel: string,
+    delete: string,
+    delete_door: string,
+    id: string,
+    name: string,
+    zone: string,
+    no_results_found: string,
+    no_such_sound: string,
+    create_a_new_door: string,
+    search: string,
+    difficulty: string,
+    area_size: string,
+    area_size_description: string,
+    speed_multiplier: string,
+    speed_multiplier_description: string,
+    character_id: string,
+    door_name: string,
+    passcode: string,
+    autolock_interval: string,
+    autolock_interval_info: string,
+    interact_distance: string,
+    interact_distance_info: string,
+    door_rate: string,
+    door_rate_info: string,
+    locked: string,
+    locked_info: string,
+    double: string,
+    double_info: string,
+    dutomatic: string,
+    dutomatic_info: string,
+    lockpick: string,
+    lockpick_info: string,
+    hide_ui: string,
+    hide_ui_info: string,
+    hold_open: string,
+    hold_open_info: string,
+    grade: string,
+    group: string,
+    item: string,
+    item_options: string,
+    remove_on_use: string,
+    metadata_type: string,
+    edit_info: string,
+    edit: string,
+    lockpick_difficulty: string,
+    easy: string,
+    medium: string,
+    hard: string,
+    custom: string,
+    lock_sound: string,
+    unlock_sound: string,
+    doors: string,
+    general: string,
+    characters: string,
+    groups: string,
+    items: string,
+    sound: string,
+    create_a_new_row: string,
+    settings_applied: string,
+    confirm_door: string,
+    no_door_settings_copied: string,
+    apply_copied_settings: string,
+    difficulty_required: string,
+    area_size_required: string,
+    speed_multiplier_required: string
+  };  
+}
 
-debugData([
+interface LocaleContextValue {
+  locale: Locale;
+  setLocale: (locales: Locale) => void;
+}
+
+debugData<Locale>([
   {
     action: 'setLocale',
     data: {
-      language: 'English',
       ui: {
         door_actions: 'Door actions',
         settings: 'Settings',
@@ -93,95 +169,11 @@ debugData([
   },
 ]);
 
-interface Locale {
-  language: string;
-  ui: {
-    door_actions: string;
-    settings: string;
-    copy_settings: string;
-    settings_copied: string;
-    teleport_to_door: string;
-    confirm_delete: string;
-    confirm_delete_prompt: string;
-    confirm: string;
-    cancel: string;
-    delete: string;
-    delete_door: string;
-    id: string;
-    name: string;
-    zone: string;
-    no_results_found: string;
-    no_such_sound: string;
-    create_a_new_door: string;
-    search: string;
-    difficulty: string;
-    area_size: string;
-    area_size_description: string;
-    speed_multiplier: string;
-    speed_multiplier_description: string;
-    character_id: string;
-    door_name: string;
-    passcode: string;
-    autolock_interval: string;
-    autolock_interval_info: string;
-    interact_distance: string;
-    interact_distance_info: string;
-    door_rate: string;
-    door_rate_info: string;
-    locked: string;
-    locked_info: string;
-    double: string;
-    double_info: string;
-    dutomatic: string;
-    dutomatic_info: string;
-    lockpick: string;
-    lockpick_info: string;
-    hide_ui: string;
-    hide_ui_info: string;
-    hold_open: string;
-    hold_open_info: string;
-    grade: string;
-    group: string;
-    item: string;
-    item_options: string;
-    remove_on_use: string;
-    metadata_type: string;
-    edit_info: string;
-    edit: string;
-    lockpick_difficulty: string;
-    easy: string;
-    medium: string;
-    hard: string;
-    custom: string;
-    lock_sound: string;
-    unlock_sound: string;
-    doors: string;
-    general: string;
-    characters: string;
-    groups: string;
-    items: string;
-    sound: string;
-    create_a_new_row: string;
-    settings_applied: string;
-    confirm_door: string;
-    no_door_settings_copied: string;
-    apply_copied_settings: string;
-    difficulty_required: string;
-    area_size_required: string;
-    speed_multiplier_required: string;
-  };
-}
-
-interface LocaleContextValue {
-  locale: Locale;
-  setLocale: (locales: Locale) => void;
-}
 
 const LocaleCtx = createContext<LocaleContextValue | null>(null);
 
 const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [locale, setLocale] = useState<Locale>({
-    language: '',
     ui: {
       door_actions: '',
       settings: '',
@@ -258,6 +250,10 @@ const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
       speed_multiplier_required: ''
     },
   });
+
+  useEffect(() => {
+    fetchNui('loadLocale');
+  }, []);
 
   useNuiEvent('setLocale', async (data: Locale) => setLocale(data));
 

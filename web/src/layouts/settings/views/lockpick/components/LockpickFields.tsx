@@ -5,18 +5,19 @@ import { TbSettings, TbTrash } from 'react-icons/tb';
 import DifficultyModal from '../../characters/components/DifficultyModal';
 import { useLocales } from '../../../../../providers/LocaleProvider';
 
-const { locale } = useLocales();
-const selectData: { label: string; value: string }[] = [
-  { label: locale.ui.easy, value: 'easy' },
-  { label: locale.ui.medium, value: 'medium' },
-  { label: locale.ui.hard, value: 'hard' },
-  { label: locale.ui.custom, value: 'custom' },
-]
 
 const LockpickFields: React.FC = () => {
   const lockpickFields = useStore((state) => state.lockpickDifficulty);
   const setLockpickFields = useSetters((setter) => setter.setLockpickDifficulty);
   const [modal, setModal] = useState<{ opened: boolean; index: number }>({ opened: false, index: 0 });
+  const { locale } = useLocales();
+  
+  const selectData: { label: string; value: string }[] = [
+    { label: locale.ui.easy, value: 'easy' },
+    { label: locale.ui.medium, value: 'medium' },
+    { label: locale.ui.hard, value: 'hard' },
+    { label: locale.ui.custom, value: 'custom' },
+  ]
 
   const handleRowDelete = (index: number) => {
     setLockpickFields((prevState) => prevState.filter((obj, indx) => indx !== index));
