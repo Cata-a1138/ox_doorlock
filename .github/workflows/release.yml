@@ -1,9 +1,12 @@
-name: Release
+name: 构建发行版
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      title:
+        description: '发行版标题及标签'
+        type: string
+        required: true
 
 jobs:
   create-release:
@@ -48,25 +51,6 @@ jobs:
         env:
           CI: false
 
-      - name: Bump manifest version
-        run: node .github/actions/bump-manifest-version.js
-        env:
-          TGT_RELEASE_VERSION: ${{ github.ref_name }}
-
-      - name: Push manifest change
-        uses: EndBug/add-and-commit@v8
-        with:
-          add: fxmanifest.lua
-          push: true
-          author_name: Manifest Bumper
-          author_email: 41898282+github-actions[bot]@users.noreply.github.com
-          message: 'chore: bump manifest version to ${{ github.ref_name }}'
-
-      - name: Update tag ref
-        uses: EndBug/latest-tag@latest
-        with:
-          tag-name: ${{ github.ref_name }}
-
       - name: Bundle files
         run: |
           mkdir -p ./temp/ox_doorlock
@@ -82,7 +66,8 @@ jobs:
         id: auto_release
         with:
           repo_token: '${{ secrets.GITHUB_TOKEN }}'
-          title: ${{ env.RELEASE_VERSION }}
+          automatic_release_tag: "${{ inputs.title }}"
+          title: "${{ inputs.title }}"
           prerelease: false
           files: ox_doorlock.zip
 
