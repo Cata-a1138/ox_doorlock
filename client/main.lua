@@ -279,8 +279,6 @@ local function useClosestDoor()
 	end
 end
 
-exports('useClosestDoor', useClosestDoor)
-
 CreateThread(function()
 	local lockDoor = locale('lock_door')
 	local unlockDoor = locale('unlock_door')
@@ -357,3 +355,6 @@ RegisterNUICallback('loadLocale', function(_, cb)
         data = json.decode(JSON)
     })
 end)
+
+exports('useClosestDoor', useClosestDoor)
+exports('getClosestDoor', function() return ClosestDoor end)
